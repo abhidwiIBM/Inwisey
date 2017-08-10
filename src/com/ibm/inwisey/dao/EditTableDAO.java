@@ -16,22 +16,22 @@ public class EditTableDAO {
 	private static Properties myProp = ((QueryPropertiesService) ApplicationContextService.getApplicationContext()
 			.getBean("propertyService")).getInstance();
 
-	public static String checkTableLock() {
+	public static String checkTableLock(String billCycle) {
 
 		try {
-			String lockedBy = (String) jdbcTemp.queryForObject(myProp.getProperty("CHECK_TABLE_LOCK"), String.class);
+			String lockedBy = (String) jdbcTemp.queryForObject(myProp.getProperty("CHECK_TABLE_LOCK"), new Object[] { billCycle } ,String.class);
 			return lockedBy;
 		} catch (EmptyResultDataAccessException e) {
 			return "";
 		}
 	}
 
-	public static void lockTable(String userID) {
+	public static void lockTable(String billCycle , String userID) {
 
-		jdbcTemp.update(myProp.getProperty("INSERT_TABLE_LOCK"), new Object[] { userID, 1 });
+		jdbcTemp.update(myProp.getProperty("UPDATE_TABLE_LOCK"), new Object[] {userID, billCycle });
 	}
 
-	public static void releaseLock() {
-		jdbcTemp.execute(myProp.getProperty("DELETE_TABLE_LOCK"));
+	public static void releaseLock(String userID, String billCycle) {
+		jdbcTemp.update(myProp.getProperty("DELETE_TABLE_LOCK"), new Object [] {userID, billCycle});
 	}
 }

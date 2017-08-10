@@ -10,18 +10,32 @@
         <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"> </script>
 		<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js"> </script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css">
-	    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap4.min.css">		
+	    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap4.min.css">
+	    		
 	
+	<style>
 	
+		th { font-size: 12px; overflow:hidden; white-space: nowrap; text-overflow: ellipsis; }
+	    td { font-size: 10px; overflow:hidden; white-space: nowrap; text-overflow: ellipsis; }
+	   
+	   
+	</style>
 	 <script> 
 	  $(document).ready(function() {
-	        var reportTable = $('#ilcReport').DataTable(); 
+	        var reportTable = $('#ilcReport').DataTable({	        	
+	            "scrollX": true,
+	            "scrollY": 400,
+	            "aoColumnDefs": [
+	            	
+	            	{ "bVisible": true, "aTargets": ['_all'] }
+	            	]
+	        }); 
 	        $("input.rowcheckbox").attr("disabled", true);     
 	        
 	        $("#Edit").click(function(){
-	        	var userID = "adwivedi";
+	        	
 	        	$.ajax({
-				    url: '/Inwisey/editReport' + '?userID=' + userID,
+				    url: '/Inwisey/Inwisey/editReport',
 				    data: false,
 				    dataType: 'text',
 				    processData: false,
@@ -45,27 +59,41 @@
 	        	//var Records = '[';
 	        	var arrRows = [];
 	        	$("table tr").find('input[type="checkbox"]:checked').each(function(){
-			  			var selectedChkBoxID = $(this).attr('id');
-			  			var selectedRowID = "#" + selectedChkBoxID;
-			  			var selectedRowIdx = reportTable.row(selectedRowID).index();
-				  		var selectedRowNum = selectedRowIdx + 1;
+			  			var selectedChkBox = $(this).attr('name');
+			  			var selectedRow = "#" + selectedChkBox;
+			  			//var selectedRowIdx = reportTable.row(selectedRow).index();
+				  		//var selectedRowNum = selectedRowIdx + 1;
 				  		var rowData = [];
-			  			$('table tr').eq(selectedRowNum).find('input[type="text"]').each(function(){			  				  
+			  			$(selectedRow).find('input[type="text"]').each(function(){			  				  
 			  				  rowData.push("\"" + $(this).val() +"\"")
 			  			});			  			
-			  			arrRows.push("{ \"rowID\" : " + selectedChkBoxID + " , " + "\"rowData\" : [" + rowData.join(',') + ']}' );			  			
+			  			arrRows.push("{ \"rowID\" : " + selectedChkBox + " , " + "\"rowData\" : [" + rowData.join(',') + ']}' );			  			
 	  		    		});	        	
 	        	var Records ="[" +  arrRows.join(' , ') + "]";	       
 	        	Records = JSON.parse(Records);
 	        	$.ajax({	        		
 	        		type: 'POST',
-	        		url: 'Inwisey/Save',
+	        		url: '/Inwisey/Inwisey/Save',
 	        		contentType: 'application/json',
 	        		data: JSON.stringify(Records),
 	        		success: function (data){	        			
 	        			alert("Data saved successfully");
-	        				      
-	    			  }        			
+	        			
+	        			for (i=0 ; i< Records.length; i++ ){	
+	    			    	//var selector = "#ilcReport tr:nth-child(" + rowNum + ") td:nth-child(" + i + ")";
+	    			      	var rowID = Records[i].rowID;
+	    			      	var rowData = [];
+	    			      	rowData = Records[i].rowData;
+	    			      	
+	    			      	var selector = "#" + rowID + " " + "td";
+	    			      	$(selector).find('input[type="checkbox"]').prop('checked',false);
+	    			      	for (j=1 ; j<= rowData.length ; j++){
+	    			    		$(selector).eq(j).html(rowData[j-1]);
+	    			      	}
+	    			      	$('table th').eq(0).click();
+	    			      	$("input.rowcheckbox").attr("disabled", true);
+	    			  }
+	        		}        			
 	        		      		
 	        	});
 	        	
@@ -73,11 +101,10 @@
 	        
 	        $("#SignOff").click(function(){
 	        	
-	        	var userID = "adwivedi";
-	        	var billCycle = "05017";
+	        	
 	        	$.ajax({	        		
 	        		type: 'GET',
-	        		url: 'Inwisey/SignOff/' + '?userID=' + userID + '&billCycle=' + billCycle ,
+	        		url: '/Inwisey/Inwisey/SignOff/' ,
 	        		contentType: 'text/html',
 	        		data: false,
 	        		success: function (data){	        			
@@ -86,6 +113,8 @@
 	    			  }        			
 	        	});        	
 	        });
+	        
+	        
 	  });
 	  
 	  function editRow(seqID){		  
@@ -94,20 +123,29 @@
 		  var rowIdx = reportTable.row(rowID).index();
 		  var rowNum = rowIdx + 1;
 		  var oldData = reportTable.row(rowIdx).data();  
-		  var rowSelected = $('table tr').eq(rowNum).find('input[type="checkbox"]').prop('checked');
+		  var chkBox = "[name=" + seqID + "]";
+		  var prop = $(chkBox).prop('checked');
 		  
-		  if (rowSelected){
-			  for (i=2; i< oldData.length + 1; i++){	
-			    	var selector = "#ilcReport tr:nth-child(" + rowNum + ") td:nth-child(" + i + ")";
-			      	$(selector).html('<input type="text" value="'+oldData[i-1]+'">');	      
+		  
+		  if (prop){
+			  for (i=1; i< oldData.length ; i++){	
+			    	//var selector = "#ilcReport tr:nth-child(" + rowNum + ") td:nth-child(" + i + ")";
+			      	var selector = rowID + " " + "td";
+			    	$(selector).eq(i).html('<input type="text" value="'+oldData[i]+'">');		      	
 			  }
+			  
+			  
 		  }
 		  else{
-			  for (i=2; i< oldData.length + 1; i++){	
-			    	var selector = "#ilcReport tr:nth-child(" + rowNum + ") td:nth-child(" + i + ")";
-			      	$(selector).html(oldData[i-1]);
-		  	  }
+			  for (i=1; i< oldData.length + 1; i++){	
+			    	//var selector = "#ilcReport tr:nth-child(" + rowNum + ") td:nth-child(" + i + ")";
+			    	var selector = rowID + " " + "td";
+			      	//$(selector).html(oldData[i-1]);
+			    	$(selector).eq(i).html(oldData[i]);
+			  }
 		  }
+		  
+		 $('table th').eq(0).click();
 	        
 	  }
 	  
@@ -141,17 +179,15 @@
 		
 </div>
 
-
-	
-<br>
-<br>
 <br>
 <br>
 
-<div style="overflow-x:auto;">
+
+<!-- -style="overflow-x:auto; width: 800px;" -->
+<div  >
 	<form:form action="/ILCApp/save" method="POST">	
 	 <table id="ilcReport" class="table table-striped table-bordered myclass" cellspacing="0" width="10%">
-	 <thead>
+	 <thead >
             <tr>
             	<th>Select</th>
 				<th>Emp ID</th>
@@ -202,7 +238,7 @@
 				<c:if test="${not empty ilcDataList}">
 			   	 <c:forEach var="o" items="${ilcDataList}">
 			            <tr id="${o.seqID}" class="${o.seqID}">
-			                <td><input type="checkbox" class="rowcheckbox" id="${o.seqID}" onclick="editRow(${o.seqID})"/></td>
+			                <td><input type="checkbox" class="rowcheckbox" name="${o.seqID}" onclick="editRow(${o.seqID})"/></td>
 							<td>${o.empID}</td>
 							<td>${o.empName}</td>
 							<td>${o.claimCode}</td>
@@ -248,11 +284,8 @@
 			        </c:forEach>			    	  
 				</c:if>		
 			
-		</tbody>     
-	
-	</table>
-	<br>
-	<br>
+		</tbody> 
+	</table>	
 	</form:form>
 </div>
 <div class="footer">	 

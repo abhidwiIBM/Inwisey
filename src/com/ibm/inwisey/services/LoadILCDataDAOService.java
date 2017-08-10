@@ -11,11 +11,10 @@ public class LoadILCDataDAOService {
 			
 			private static ArrayList<ILCData> ilcModelList;
 			
-			public static void loadData(){
+			public static void loadData(String billCycle, String billCycleType){
 			
 			ilcModelList = FetchExcelDataService.getDataFromExcel();
-			LoadILCDataDAO.loadData(ilcModelList);
-			System.out.println("Data Loaded successfully");
+			LoadILCDataDAO.loadData(ilcModelList, billCycle,billCycleType);
 			
 			}
 	

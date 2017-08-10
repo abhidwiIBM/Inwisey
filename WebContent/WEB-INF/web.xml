@@ -24,10 +24,18 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>/WEB-INF/Inwisey-servlet.xml</param-value>
 	</context-param>
+	
 	  <listener>
          <listener-class>
             org.springframework.web.context.ContextLoaderListener
          </listener-class>
       </listener>
+      <listener>
+        <listener-class>
+            org.springframework.web.context.request.RequestContextListener
+        </listener-class>
+    </listener>
+      
+      
  
 </web-app>

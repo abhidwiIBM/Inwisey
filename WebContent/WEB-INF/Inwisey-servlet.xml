@@ -2,10 +2,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
    						http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
   						http://www.springframework.org/schema/aop 
-  						http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+  						http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
   						http://www.springframework.org/schema/context 
   						http://www.springframework.org/schema/context/spring-context-2.5.xsd
   						http://www.springframework.org/schema/tx 
@@ -18,6 +19,7 @@
     <context:component-scan base-package="com.ibm.inwisey.util" />
     <context:annotation-config />
      
+    <mvc:resources mapping="/Inwisey/resources/**" location="/resources/" />
     <mvc:resources mapping="/resources/**" location="/resources/" />
     <mvc:annotation-driven/>
  
@@ -33,7 +35,7 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="messages" />
     </bean>
-     
+
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="20848820" />
     </bean>
@@ -44,7 +46,7 @@
     
     <bean id="contextService" class="com.ibm.inwisey.services.ApplicationContextService" />
     
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
             <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
             <property name="url" value="jdbc:mysql://localhost:3306/ilc"/>
             <property name="username" value="root"/>
@@ -57,6 +59,11 @@
    
     <bean id="jdbcTemplateService" class="com.ibm.inwisey.services.JdbcTemplateService">
     	<constructor-arg index="0" ref="jdbcTemplate"/>
+   	</bean>
+   	
+   	
+   	<bean id="userBean" class="com.ibm.inwisey.model.UserProfile"  scope="session">
+   	<aop:scoped-proxy/>   	      	
    	</bean>
    	
    

@@ -16,8 +16,6 @@ public class SaveRecords {
 
 	public static void loaData(ArrayList<Records> record) {
 
-		// String [] rowData = record.get(0).getRowData();
-
 		JdbcTemplate jdbcTemp = ((JdbcTemplateService) ApplicationContextService.getApplicationContext()
 				.getBean("jdbcTemplateService")).getJdbcTemp();
 		Properties myProp = ((QueryPropertiesService) ApplicationContextService.getApplicationContext()

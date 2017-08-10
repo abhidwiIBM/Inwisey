@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class LoadILCDataDAO {
 
-	public static void loadData(ArrayList<ILCData> ilcModelList) {
+	public static void loadData(ArrayList<ILCData> ilcModelList, String billCycle, String billCycleType) {
 
 		JdbcTemplate jdbcTemp = ((JdbcTemplateService) ApplicationContextService.getApplicationContext()
 				.getBean("jdbcTemplateService")).getJdbcTemp();
@@ -65,6 +65,7 @@ public class LoadILCDataDAO {
 				ps.setString(39, ilcModelList.get(i).getGroupType());
 				ps.setString(40, ilcModelList.get(i).getVendorClass());
 				ps.setString(41, ilcModelList.get(i).getWrIncDef());
+				ps.setString(42, billCycle);
 			}
 
 			@Override

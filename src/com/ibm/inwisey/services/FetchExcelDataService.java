@@ -47,7 +47,7 @@ public class FetchExcelDataService {
 	public static ArrayList<ILCData> getDataFromExcel(){
 
 		try{
-				ilcInput        = new FileInputStream(new File("C:\\ILCData.xlsx"));	
+				ilcInput        = new FileInputStream(new File("C:\\Users\\IBM_ADMIN\\Desktop\\Workbench\\FFIC ILC Report.xlsx"));	
 				ilcBook         = new XSSFWorkbook(ilcInput);
 				ilcSheet        = ilcBook.getSheet("WNPPT");	
 				rowIterator     = ilcSheet.iterator();				
@@ -69,7 +69,6 @@ public class FetchExcelDataService {
 					case STRING:					
 						colName = (ilcSheet.getRow(0).getCell(cell.getColumnIndex()).getStringCellValue()).trim();					
 						colVal  = (ilcSheet.getRow(curRow).getCell(cell.getColumnIndex()).getStringCellValue()).trim();
-						System.out.println(colName + " - " + colVal );
 						rowData.put(colName, colVal);					
 						break;
 					case NUMERIC:
@@ -97,6 +96,7 @@ public class FetchExcelDataService {
 			return ilcModelList;
 		}catch(Exception e){
 			System.out.println("Error occured:" + e);
+			e.printStackTrace();
 			return ilcModelList;
 		}finally{	
 			try{
